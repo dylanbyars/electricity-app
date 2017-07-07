@@ -1,0 +1,39 @@
+@import url("https://fonts.googleapis.com/css?family=Arvo|Hind|Inconsolata");
+*,
+*:before,
+*:after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; }
+
+.board {
+  position: relative;
+  width: 100vw;
+  min-height: 100vh;
+  border: 3px solid green; }
+
+.card {
+  font-family: 'Hind', sans-serif;
+  font-family: 'Inconsolata', monospace;
+  font-family: 'Arvo', serif;
+  border: 1px solid black;
+  width: 80px;
+  height: 140px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 4px; }
+
+.card__num {
+  font-size: 1.5em;
+  margin: 6px 10px;
+  /*border: 1px solid yellow;*/ }
+
+.card__num:first-child {
+  align-self: flex-start; }
+
+.card__num:last-child {
+  align-self: flex-end; }
+
+/*# sourceMappingURL=index.css.map */

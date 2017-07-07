@@ -1,0 +1,20 @@
+Game Model
+
+number of players
+the game deck as the game is playing
+// number of decks to play a round with
+
+Card Model
+
+card suit
+card number
+card image
+number of seconds player should drink for
+
+Gameplay
+
+input for number of players
+start Button
+well-marked positions for cards to be dealt to players around the table
+a drink timer in the middle after a card is dealt
+indicators for players that are supposed to drink that dismisses after they've hit their drink count

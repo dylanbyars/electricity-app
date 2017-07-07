@@ -1,0 +1,75 @@
+@import url('https://fonts.googleapis.com/css?family=Arvo|Hind|Inconsolata');
+
+*, 
+*:before,
+*:after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.App {
+  
+}
+
+.board {
+  position: relative;
+  width: 100vw;
+  min-height: 100vh;
+  // border-radius: 50%;
+  border: 3px solid green;
+  // transform-style: preserve-3d;
+}
+
+// $n: 5;
+// $d: 50px;
+// $ax: 40deg;
+// $ba: 360deg / $n;
+
+// .stack {
+// 	position: absolute;
+// 	margin: calc(50vh - #{.5 * $d}) 0 0 calc(50vw - #{.5 * $d});
+// 	width: $d;
+//   height: $d;
+// 	transform: rotate(var(--a, 0deg)) translate(3.5 * $d) rotateX($ax) scaleY(1 / cos($ax));
+// 	box-shadow: inset 0 0 0 4px;
+// 	background: gainsboro;
+// 	font: 900 2em/#{$d} trebuchet ms, tahoma, verdana;
+// 	text-align: center;
+	
+// 	@for $i from 1 to $n {
+//     &:nth-child(#{$i + 1}) { --a: $i * $ba }
+//   }
+// }
+
+.card {
+  font-family: 'Hind', sans-serif;
+  font-family: 'Inconsolata', monospace;
+  font-family: 'Arvo', serif;
+  border: 1px solid black;
+  width: 80px;
+  height: 140px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 4px;
+}
+
+.card__num {
+  font-size: 1.5em;
+  margin: 6px 10px;
+  /*border: 1px solid yellow;*/
+}
+
+.card__num:first-child {
+  align-self: flex-start;
+}
+
+.card__num:last-child {
+  align-self: flex-end;
+}
+
+.card__suit {
+
+}
