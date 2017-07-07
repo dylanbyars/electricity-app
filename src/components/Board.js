@@ -14,6 +14,9 @@ export default class Board extends Component {
             deck: null,
             stacks: null
         }
+
+        this.drawCard = this.drawCard.bind(this)
+        this.showCountdown = this.showCountdown.bind(this)
     }
 
     componentDidMount() {
@@ -25,6 +28,8 @@ export default class Board extends Component {
     }
 
     drawCard() {
+
+        console.log('drawDeck()')
 
         // 1 unit === 500ms
         // or make these get exponentially faster
@@ -62,7 +67,9 @@ export default class Board extends Component {
             }
         }
 
-        let card = this.state.deck.draw()
+        let deck = this.state.deck
+        console.log(deck)
+        let card = deck.draw()
         let suit = card[0]
         let rank = card.slice(1)
 
@@ -75,9 +82,25 @@ export default class Board extends Component {
         // this is the place to call the next card draw
         // everything else related to make ish happen during a turn needs 
         // to happen before this
-        setTimeout(() => {
-            console.log('next turn go!')
-        }, countdown)
+
+        // DO STUFF
+
+        this.showCountdown(countdown)
+
+        this.setState({ deck }, () => {
+            console.log('state was set in drawCard()')
+            setTimeout(this.drawCard, countdown + 500)
+        })
+    }
+
+    showCountdown(time) {
+        // break the time up into increments
+        let beat = 500
+        // do an interval that shows an increasing number for each beat
+        setInterval(() => {
+            console.log('beat')
+        }, (time / 500) * 1000)
+        // log count to page
     }
 
     render() {
