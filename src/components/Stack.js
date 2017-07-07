@@ -4,12 +4,11 @@ import { Card } from './Card';
 
 export const Stack = ({ cards }) => {
 
-    const stack = cards.map(card => <Card card={card} />)
+    const stack = cards.map(card => {
+        //console.log(card)
+        return <Card key={Math.random()} card={card} />
+    })
 
-    return (
-        <div className="stack">
-            A
-        </div>
-    )
+    return <div className="stack">{stack}</div>
 
 }

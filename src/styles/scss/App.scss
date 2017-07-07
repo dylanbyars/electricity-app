@@ -9,11 +9,16 @@
 }
 
 .App {
-  
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .board {
-  position: relative;
+  // position: relative;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
   width: 100vw;
   min-height: 100vh;
   // border-radius: 50%;
@@ -42,10 +47,18 @@
 //   }
 // }
 
+.stack {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  border: 1px dashed blue;
+}
+
 .card {
   font-family: 'Hind', sans-serif;
-  font-family: 'Inconsolata', monospace;
-  font-family: 'Arvo', serif;
+  // font-family: 'Inconsolata', monospace;
+  // font-family: 'Arvo', serif;
   border: 1px solid black;
   width: 80px;
   height: 140px;
