@@ -7,24 +7,42 @@
   box-sizing: border-box; }
 
 .App {
+  width: 100vw;
+  height: 100vh;
   display: flex;
   justify-content: center;
-  align-items: center; }
+  align-items: center;
+  border: 5px solid green; }
 
 .board {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
+  position: relative;
   width: 100vw;
   min-height: 100vh;
+  transform-style: preserve-3d;
   border: 3px solid green; }
 
-.stack {
+.player {
+  position: absolute;
   display: flex;
-  flex-direction: column;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
-  border: 1px dashed blue; }
+  margin: calc(50vmin - 20px) 0 0 calc(50vmin - 20px);
+  width: 40px;
+  height: 40px;
+  transform: rotate(var(--a, 0deg)) translate(140px);
+  border: 1px solid black;
+  border-radius: 50%; }
+  .player:nth-child(2) {
+    --a: 72deg; }
+  .player:nth-child(3) {
+    --a: 144deg; }
+  .player:nth-child(4) {
+    --a: 216deg; }
+  .player:nth-child(5) {
+    --a: 288deg; }
+
+.stack {
+  transform: rotate(-90deg); }
 
 .card {
   font-family: 'Hind', sans-serif;
