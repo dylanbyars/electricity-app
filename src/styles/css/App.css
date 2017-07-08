@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css?family=Arvo|Hind|Inconsolata");
+@import url("https://fonts.googleapis.com/css?family=Arvo");
 *,
 *:before,
 *:after {
@@ -11,62 +11,52 @@
   height: 100vh;
   display: flex;
   justify-content: center;
-  align-items: center;
-  border: 5px solid green; }
+  align-items: center; }
 
 .board {
-  position: relative;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
   width: 100vw;
   min-height: 100vh;
-  transform-style: preserve-3d;
   border: 3px solid green; }
 
-.player {
-  position: absolute;
+.stack {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: calc(50vmin - 20px) 0 0 calc(50vmin - 20px);
-  width: 40px;
-  height: 40px;
-  transform: rotate(var(--a, 0deg)) translate(140px);
-  border: 1px solid black;
-  border-radius: 50%; }
-  .player:nth-child(2) {
-    --a: 72deg; }
-  .player:nth-child(3) {
-    --a: 144deg; }
-  .player:nth-child(4) {
-    --a: 216deg; }
-  .player:nth-child(5) {
-    --a: 288deg; }
-
-.stack {
-  display: flex; }
+  height: 175px;
+  width: 100px; }
 
 .card {
-  font-family: 'Hind', sans-serif;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  font-family: 'Arvo', serif;
   border: 1px solid black;
   width: 80px;
   height: 140px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
+  background-color: #FEFEFE;
   border-radius: 4px; }
 
 .card__rank {
-  font-size: 1.5em;
-  margin: 6px 10px;
-  /*border: 1px solid yellow;*/ }
+  font-size: 1.8em;
+  margin: 5% 12%; }
 
 .card__rank:first-child {
   align-self: flex-start; }
 
 .card__rank:last-child {
-  align-self: flex-end; }
+  align-self: flex-end;
+  transform: rotate(180deg); }
 
 .card__suit {
-  font-size: 1.5em; }
+  font-size: 2.5em; }
+
+.red {
+  color: #E9190F; }
 
 /*# sourceMappingURL=App.css.map */

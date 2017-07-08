@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Arvo|Hind|Inconsolata');
+@import url('https://fonts.googleapis.com/css?family=Arvo');
 
 *, 
 *:before,
@@ -14,64 +14,73 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 5px solid green;
 }
 
 .board {
-  position: relative;
+  // position: relative;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
   width: 100vw;
   min-height: 100vh;
-  transform-style: preserve-3d;
+  // transform-style: preserve-3d;
   // border-radius: 50%;
   border: 3px solid green;
 }
 
-$n: 5;
-$d: 40px;
-$ax: 40deg;
-$ba: 360deg / $n;
+// $n: 5;
+// $d: 40px;
+// $ax: 40deg;
+// $ba: 360deg / $n;
 
-.player {
-	position: absolute;
+// .player {
+// 	position: absolute;
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+// 	margin: calc(50vmin - #{.5 * $d}) 0 0 calc(50vmin - #{.5 * $d});
+// 	width: $d;
+//   height: $d;
+// 	transform: rotate(var(--a, 0deg)) translate(3.5 * $d);
+//   border: 1px solid black;
+//   border-radius: 50%;
+	
+// 	@for $i from 1 to $n {
+//     &:nth-child(#{$i + 1}) {
+//       --a: $i * $ba
+//     }
+//   }
+// }
+
+.stack {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
-	margin: calc(50vmin - #{.5 * $d}) 0 0 calc(50vmin - #{.5 * $d});
-	width: $d;
-  height: $d;
-	transform: rotate(var(--a, 0deg)) translate(3.5 * $d);
-  border: 1px solid black;
-  border-radius: 50%;
-	
-	@for $i from 1 to $n {
-    &:nth-child(#{$i + 1}) {
-      --a: $i * $ba
-    }
-  }
-}
-
-.stack {
-  display: flex;
+  height: 175px;
+  width: 100px;
+  // border: 5px dashed blue;
 }
 
 .card {
-  font-family: 'Hind', sans-serif;
-  // font-family: 'Inconsolata', monospace;
-  // font-family: 'Arvo', serif;
+  position: absolute;
+  // top: 50%;
+  // left: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  font-family: 'Arvo', serif;
   border: 1px solid black;
   width: 80px;
   height: 140px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
+  background-color: #FEFEFE;
   border-radius: 4px;
 }
 
 .card__rank {
-  font-size: 1.5em;
-  margin: 6px 10px;
-  /*border: 1px solid yellow;*/
+  font-size: 1.8em;
+  margin: 5% 12%;
 }
 
 .card__rank:first-child {
@@ -80,8 +89,13 @@ $ba: 360deg / $n;
 
 .card__rank:last-child {
   align-self: flex-end;
+  transform: rotate(180deg);
 }
 
 .card__suit {
-  font-size: 1.5em;
+  font-size: 2.5em;
+}
+
+.red {
+  color: #E9190F;
 }

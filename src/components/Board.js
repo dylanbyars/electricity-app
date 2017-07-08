@@ -8,14 +8,13 @@ export default class Board extends Component {
     constructor() {
         // do I really need super here?? I'm not relying on any fed-in props and I feel like that's what you need super for. Or something
         super()
-        
+
         this.state = {
             players: 5,
             currentPlayer: 0,
-            cards: [
-                '♠2', '♠3', '♠4', '♠5', '♠6', '♠7', '♠8', '♠9', '♠10', '♠J', '♠Q', '♠K', '♠A', '♦2', '♦3', '♦4', '♦5', '♦6', '♦7', '♦8', '♦9', '♦10', '♦J', '♦Q', '♦K', '♦A', '♥2', '♥3', '♥4', '♥5', '♥6', '♥7', '♥8', '♥9', '♥10', '♥J', '♥Q', '♥K', '♥A', '♣2', '♣3', '♣4', '♣5', '♣6', '♣7', '♣8', '♣9', '♣10', '♣J', '♣Q', '♣K', '♣A'],
             deck: null,
-            stacks: null,
+            stacks: {},
+            circuit: [],
             // store stats about the round like total count, longest chain, etc
             stats: null,
             settings: {
@@ -28,24 +27,31 @@ export default class Board extends Component {
 
         this.drawCard = this.drawCard.bind(this)
         this.showCountdown = this.showCountdown.bind(this)
+        this.updateStacks = this.updateStacks.bind(this)
+        this.updateCircuit = this.updateCircuit.bind(this)
     }
 
     componentDidMount() {
 
-        let stacks = {}
-        for (let i = 0; i < this.state.players; i++) {
-            stacks['player' + i] = {
-                    pile: [],
-                    drinkCount: 0,
-                    drinkTime: 0
-                }
-            }
+        const CARDS = ['♠2', '♠3', '♠4', '♠5', '♠6', '♠7', '♠8', '♠9', '♠10', '♠J', '♠Q', '♠K', '♠A', '♦2', '♦3', '♦4', '♦5', '♦6', '♦7', '♦8', '♦9', '♦10', '♦J', '♦Q', '♦K', '♦A', '♥2', '♥3', '♥4', '♥5', '♥6', '♥7', '♥8', '♥9', '♥10', '♥J', '♥Q', '♥K', '♥A', '♣2', '♣3', '♣4', '♣5', '♣6', '♣7', '♣8', '♣9', '♣10', '♣J', '♣Q', '♣K', '♣A']
+
+        
+
+        // for (let i = 0; i < this.state.players; i++) {
+        //     stacks[i] = []
+        // }
 
         this.setState({
             // make a shuffled deck to play with
-            deck: new Deck(this.state.cards).shuffle(),
-            // prepare the stacks to hold players' piles
-            stacks: stacks
+            deck: new Deck(CARDS).shuffle(),
+            // prepare the stacks to hold players' cards
+            stacks: (() => {
+                let stacks = {}
+                for (let i = 0; i < this.state.players; i++) {
+                    stacks[i] = []
+                }
+                return stacks
+            })()
         // start the game!
         }, this.drawCard )
     }
@@ -58,11 +64,12 @@ export default class Board extends Component {
         let suit = card[0]
         let rank = card.slice(1)
 
-        let preCountdown = this.state.settings.preCountdown
-        let drinkBreak = this.state.settings.drinkBreak
+        const currentState = { ...this.state }
+        let { players, currentPlayer, stacks, circuit, settings } = currentState
 
-        // console.log(this.state.stacks)
-        console.log('Player ' + this.state.currentPlayer)
+        let { preCountdown, drinkBreak } = settings
+
+        console.log('Player: ' + currentPlayer)
         console.log('Draw: ' + rank, suit)
         console.log('Remaining: ' + deck.remaining())
 
@@ -142,20 +149,16 @@ export default class Board extends Component {
 
         this.showCountdown(countdown)
 
-        let currentPlayer = this.state.currentPlayer
-        let nextPlayer = currentPlayer < this.state.players - 1 ? currentPlayer + 1 : 0
+        let nextPlayer = currentPlayer < players - 1 ? 
+                currentPlayer + 1 : 0
 
-        const updateStacks = () => {
-            let newStacks = { ...this.state.stacks }
-            newStacks['player' + currentPlayer].pile.push(card)
-            return newStacks
-        }
-
-        if (deck.remaining() > 1) {
+        if (deck.remaining() > 0) {
             this.setState({
                 deck: deck,
                 currentPlayer: nextPlayer,
-                stacks: updateStacks()
+                stacks: this.updateStacks(card),
+                // check the currently drawn card against the approved circuit before deciding if the current circuit should be added to or cleared and restarted
+                circuit: this.updateCircuit(card)
             }, () => {
                 setTimeout(this.drawCard, preCountdown + countdown.time + drinkBreak)
             })
@@ -190,6 +193,81 @@ export default class Board extends Component {
         }
     }
 
+    updateStacks(drawnCard) {
+        let newStacks = { ...this.state.stacks }
+        newStacks[this.state.currentPlayer].push(drawnCard)
+        return newStacks
+    }
+
+    updateCircuit(drawnCard) {
+
+        // if there's nothing in the circuit -- like at the start of the game -- throw whatever's just been drawn into it
+        if (this.state.circuit.length === 0) {
+            return [drawnCard]
+        } else {
+
+            // variables
+            const currentState = { ...this.state }
+
+            const { players, currentPlayer, stacks, circuit } = currentState
+
+            function getCardDetails(card) {
+                return {
+                    suit: card[0],
+                    rank: card.slice(1)
+                }
+            }
+
+            let newCard = getCardDetails(drawnCard)
+
+            let lastInCircuit = (() => {
+
+                let oldCircuit = circuit
+
+                return getCardDetails(oldCircuit.pop())
+            })()
+
+            let nextInPlay = (() => {
+                
+                let nextStack = stacks[currentPlayer === players - 1 ? 0 : currentPlayer + 1]
+
+                if (nextStack && nextStack.length > 0) {
+                    return getCardDetails(nextStack.pop())
+                } else {
+                    return false
+                }
+            })()
+
+            console.log('Last in Circuit: ' + lastInCircuit.suit, lastInCircuit.rank)
+
+            if (nextInPlay) {
+                console.log('Next in Play' + nextInPlay.suit, nextInPlay.rank)
+            }
+
+            function multimeter(c1, c2) {
+                return c1.suit === c2.suit || c1.rank === c2.rank
+            }
+
+            if (multimeter(lastInCircuit, newCard)) {
+
+                // drawnCard connects to the circuit
+                let newCircuit = [ ...circuit ]
+                newCircuit.push(drawnCard)
+
+                if (nextInPlay && multimeter(newCard, nextInPlay)) {
+                    // drawnCard connects to the card the previous player had
+                    // wrap around style
+                    newCircuit.push(nextInPlay)
+                }
+
+                console.log('New Circuit: ' + newCircuit)
+                return newCircuit
+            }
+
+            return [drawnCard]
+        }
+    }
+
     render() {
 
         if (this.state.stacks) {
@@ -197,7 +275,7 @@ export default class Board extends Component {
             let stacks = []
 
             for (let stack in this.state.stacks) {
-                stacks.push(<Stack key={Math.random()} cards={this.state.stacks[stack].pile} />)
+                stacks.push(<Stack key={Math.random()} cards={this.state.stacks[stack]} />)
             }
 
             return (
