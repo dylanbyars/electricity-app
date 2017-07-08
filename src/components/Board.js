@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Deck from 'card-deck'
 
-import { Player } from './Player';
+// import { Player } from './Player';
 import { Stack } from './Stack';
 
 export default class Board extends Component {
@@ -12,7 +12,8 @@ export default class Board extends Component {
         this.state = {
             players: 5,
             currentPlayer: 0,
-            cards: ['♠2', '♠3', '♠4', '♠5', '♠6', '♠7', '♠8', '♠9', '♠10', '♠J', '♠Q', '♠K', '♠A', '♦2', '♦3', '♦4', '♦5', '♦6', '♦7', '♦8', '♦9', '♦10', '♦J', '♦Q', '♦K', '♦A', '♥2', '♥3', '♥4', '♥5', '♥6', '♥7', '♥8', '♥9', '♥10', '♥J', '♥Q', '♥K', '♥A', '♣2', '♣3', '♣4', '♣5', '♣6', '♣7', '♣8', '♣9', '♣10', '♣J', '♣Q', '♣K', '♣A'],
+            cards: [
+                '♠2', '♠3', '♠4', '♠5', '♠6', '♠7', '♠8', '♠9', '♠10', '♠J', '♠Q', '♠K', '♠A', '♦2', '♦3', '♦4', '♦5', '♦6', '♦7', '♦8', '♦9', '♦10', '♦J', '♦Q', '♦K', '♦A', '♥2', '♥3', '♥4', '♥5', '♥6', '♥7', '♥8', '♥9', '♥10', '♥J', '♥Q', '♥K', '♥A', '♣2', '♣3', '♣4', '♣5', '♣6', '♣7', '♣8', '♣9', '♣10', '♣J', '♣Q', '♣K', '♣A'],
             deck: null,
             stacks: null,
             // store stats about the round like total count, longest chain, etc
@@ -51,9 +52,8 @@ export default class Board extends Component {
 
     drawCard() {
 
-        console.log(this.state.stacks)
-
         let deck = this.state.deck
+        // draws a card from the deck object stored in deck
         let card = deck.draw()
         let suit = card[0]
         let rank = card.slice(1)
@@ -61,10 +61,10 @@ export default class Board extends Component {
         let preCountdown = this.state.settings.preCountdown
         let drinkBreak = this.state.settings.drinkBreak
 
-        
+        // console.log(this.state.stacks)
         console.log('Player ' + this.state.currentPlayer)
-        console.log(rank, suit)
-        console.log(deck.remaining())
+        console.log('Draw: ' + rank, suit)
+        console.log('Remaining: ' + deck.remaining())
 
         const getCountdown = (rank) => {
             switch(rank) {
@@ -143,17 +143,19 @@ export default class Board extends Component {
         this.showCountdown(countdown)
 
         let currentPlayer = this.state.currentPlayer
-        let nextPlayer = this.state.currentPlayer < this.state.players - 1 ? this.state.currentPlayer + 1 : 0
+        let nextPlayer = currentPlayer < this.state.players - 1 ? currentPlayer + 1 : 0
 
-        let currentStacks = this.state.stacks
-        let newStacks = (currentStacks) => currentStacks['player' + currentPlayer].pile.push(card)
-        console.log(newStacks(currentStacks))
+        const updateStacks = () => {
+            let newStacks = { ...this.state.stacks }
+            newStacks['player' + currentPlayer].pile.push(card)
+            return newStacks
+        }
 
         if (deck.remaining() > 1) {
             this.setState({
                 deck: deck,
                 currentPlayer: nextPlayer,
-                // stacks: newStacks()
+                stacks: updateStacks()
             }, () => {
                 setTimeout(this.drawCard, preCountdown + countdown.time + drinkBreak)
             })
@@ -190,15 +192,23 @@ export default class Board extends Component {
 
     render() {
 
-        return (
-            <div className="board">
-                {/*{this.state.stacks ? 
-                    this.state.stacks.map(stack => <Stack cards={stack.cards} />)
-                    :
-                    <h3>Loading!</h3>
-                }*/}
-                <h1>yo</h1>
-            </div>
-        )
+        if (this.state.stacks) {
+
+            let stacks = []
+
+            for (let stack in this.state.stacks) {
+                stacks.push(<Stack key={Math.random()} cards={this.state.stacks[stack].pile} />)
+            }
+
+            return (
+                <div className="board">
+                    {stacks}
+                </div>
+            )
+        } else {
+            return <h3>Loading!</h3>
+        }
+
+        
     }
 }

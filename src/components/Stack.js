@@ -1,14 +1,28 @@
 import React from 'react';
 
-import { Card } from './Card';
-
 export const Stack = ({ cards }) => {
 
-    const stack = cards.map(card => {
-        //console.log(card)
-        return <Card key={Math.random()} card={card} />
-    })
+    console.log(cards)
 
-    return <div className="stack">{stack}</div>
+    if (cards) {
+        return (
+            <div className="stack">
+                { cards.map(card => {
+                    let suit = card[0]
+                    let rank = card.slice(1)
+                    return (
+                        <div className="card" key={Math.random()}>
+                            <div className="card__rank">{rank}</div>
+                            <div className="card__suit">{suit}</div>
+                            <div className="card__rank">{rank}</div>
+                        </div>
+                    )
+                }) }
+            </div>
+        )
+    } else {
+        return <h6>empty</h6>
+    }
+
 
 }

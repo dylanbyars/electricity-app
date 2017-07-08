@@ -51,7 +51,7 @@ $ba: 360deg / $n;
 }
 
 .stack {
-  transform: rotate(-90deg);
+  display: flex;
 }
 
 .card {
@@ -68,20 +68,20 @@ $ba: 360deg / $n;
   border-radius: 4px;
 }
 
-.card__num {
+.card__rank {
   font-size: 1.5em;
   margin: 6px 10px;
   /*border: 1px solid yellow;*/
 }
 
-.card__num:first-child {
+.card__rank:first-child {
   align-self: flex-start;
 }
 
-.card__num:last-child {
+.card__rank:last-child {
   align-self: flex-end;
 }
 
 .card__suit {
-
+  font-size: 1.5em;
 }
