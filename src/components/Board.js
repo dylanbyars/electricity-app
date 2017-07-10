@@ -1,29 +1,16 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import * as Actions from '../actions/game.actions'
+
 import Deck from 'card-deck'
 
 // import { Player } from './Player';
-import { Stack } from './Stack';
+import { Stack } from './Stack'
 
-export default class Board extends Component {
-    constructor() {
-        // do I really need super here?? I'm not relying on any fed-in props and I feel like that's what you need super for. Or something
-        super()
-
-        this.state = {
-            players: 5,
-            currentPlayer: 0,
-            deck: null,
-            stacks: {},
-            circuit: [],
-            // store stats about the round like total count, longest chain, etc
-            stats: null,
-            settings: {
-                // time between when a card's drawn and the countdown starts
-                preCountdown: 2500,
-                // time between card draws after the previous countdown
-                drinkBreak: 2000
-            }
-        }
+class Board extends Component {
+    constructor(props) {
+        super(props)
 
         this.drawCard = this.drawCard.bind(this)
         this.showCountdown = this.showCountdown.bind(this)
@@ -35,38 +22,31 @@ export default class Board extends Component {
 
         const CARDS = ['♠2', '♠3', '♠4', '♠5', '♠6', '♠7', '♠8', '♠9', '♠10', '♠J', '♠Q', '♠K', '♠A', '♦2', '♦3', '♦4', '♦5', '♦6', '♦7', '♦8', '♦9', '♦10', '♦J', '♦Q', '♦K', '♦A', '♥2', '♥3', '♥4', '♥5', '♥6', '♥7', '♥8', '♥9', '♥10', '♥J', '♥Q', '♥K', '♥A', '♣2', '♣3', '♣4', '♣5', '♣6', '♣7', '♣8', '♣9', '♣10', '♣J', '♣Q', '♣K', '♣A']
 
+        // set the number of players playing. 
+        this.props.actions.setNumPlayers(5)
+        console.log(this.props.players)
+
+        // set up their stacks
+        this.props.actions.initStacks()
         
+        // make a shuffled deck to play with
+        this.props.actions.updateDeck(new Deck(CARDS).shuffle())
 
-        // for (let i = 0; i < this.state.players; i++) {
-        //     stacks[i] = []
-        // }
-
-        this.setState({
-            // make a shuffled deck to play with
-            deck: new Deck(CARDS).shuffle(),
-            // prepare the stacks to hold players' cards
-            stacks: (() => {
-                let stacks = {}
-                for (let i = 0; i < this.state.players; i++) {
-                    stacks[i] = []
-                }
-                return stacks
-            })()
         // start the game!
-        }, this.drawCard )
+        this.drawCard()
     }
 
     drawCard() {
-
-        let deck = this.state.deck
+        console.log(this.props)
+        let deck = this.props.deck
         // draws a card from the deck object stored in deck
         let card = deck.draw()
         let suit = card[0]
         let rank = card.slice(1)
 
-        const currentState = { ...this.state }
-        let { players, currentPlayer, stacks, circuit, settings } = currentState
+        let { players, stacks, circuit, settings } = this.props
 
+        let { currentPlayer } = players
         let { preCountdown, drinkBreak } = settings
 
         console.log('Player: ' + currentPlayer)
@@ -149,28 +129,30 @@ export default class Board extends Component {
 
         this.showCountdown(countdown)
 
-        let nextPlayer = currentPlayer < players - 1 ? 
-                currentPlayer + 1 : 0
+        this.props.actions.updateCircuit()
+
+        // run timers
+
+        // repeat
 
         if (deck.remaining() > 0) {
-            this.setState({
-                deck: deck,
-                currentPlayer: nextPlayer,
-                stacks: this.updateStacks(card),
-                // check the currently drawn card against the approved circuit before deciding if the current circuit should be added to or cleared and restarted
-                circuit: this.updateCircuit(card)
-            }, () => {
-                setTimeout(this.drawCard, preCountdown + countdown.time + drinkBreak)
-            })
+            // increment current player
+            this.props.actions.nextPlayer()
+            // update deck
+            this.props.actions.updateDeck(deck)
+            // update stacks
+            this.props.actions.updateStacks(currentPlayer, card)
+            // check circuit
+
+            setTimeout(this.drawCard, preCountdown + countdown.time + drinkBreak)
         } else {
             console.log('GAME OVER')
         }
-        
     }
 
     showCountdown({ count, time }) {
 
-        setTimeout(doCountdown, this.state.settings.preCountdown)
+        setTimeout(doCountdown, this.props.settings.preCountdown)
 
         function doCountdown() {
             // break the time up into increments
@@ -194,22 +176,19 @@ export default class Board extends Component {
     }
 
     updateStacks(drawnCard) {
-        let newStacks = { ...this.state.stacks }
-        newStacks[this.state.currentPlayer].push(drawnCard)
-        return newStacks
+        this.props.actions.updateStacks(drawnCard, this.props.currentPlayer)
     }
 
     updateCircuit(drawnCard) {
 
+        // variables
+        const currentState = { ...this.props }
+        const { players, currentPlayer, stacks, currentCircuit } = currentState
+
         // if there's nothing in the circuit -- like at the start of the game -- throw whatever's just been drawn into it
-        if (this.state.circuit.length === 0) {
-            return [drawnCard]
+        if (currentCircuit.length === 0) {
+            this.props.actions.updateCircuit([drawnCard])
         } else {
-
-            // variables
-            const currentState = { ...this.state }
-
-            const { players, currentPlayer, stacks, circuit } = currentState
 
             function getCardDetails(card) {
                 return {
@@ -222,7 +201,7 @@ export default class Board extends Component {
 
             let lastInCircuit = (() => {
 
-                let oldCircuit = circuit
+                let oldCircuit = [ ...currentCircuit ]
 
                 return getCardDetails(oldCircuit.pop())
             })()
@@ -251,32 +230,27 @@ export default class Board extends Component {
             if (multimeter(lastInCircuit, newCard)) {
 
                 // drawnCard connects to the circuit
-                let newCircuit = [ ...circuit ]
-                newCircuit.push(drawnCard)
+                this.props.actions.updateCircuit(newCard)
 
-                if (nextInPlay && multimeter(newCard, nextInPlay)) {
-                    // drawnCard connects to the card the previous player had
-                    // wrap around style
-                    newCircuit.push(nextInPlay)
-                }
-
-                console.log('New Circuit: ' + newCircuit)
-                return newCircuit
+                // if (nextInPlay && multimeter(newCard, nextInPlay)) {
+                //     // drawnCard connects to the card the previous player had
+                //     // wrap around style
+                //     newCircuit.push(nextInPlay)
+                // }
             }
-
-            return [drawnCard]
         }
     }
 
     render() {
 
-        if (this.state.stacks) {
+        if (this.props.stacks) {
 
-            let stacks = []
+            // let stacks = []
+            let stacks = <h1>testing!</h1>
 
-            for (let stack in this.state.stacks) {
-                stacks.push(<Stack key={Math.random()} cards={this.state.stacks[stack]} />)
-            }
+            // for (let stack in this.props.stacks) {
+            //     stacks.push(<Stack key={Math.random()} cards={this.props.stacks[stack]} />)
+            // }
 
             return (
                 <div className="board">
@@ -290,3 +264,22 @@ export default class Board extends Component {
         
     }
 }
+
+const mapStateToProps = (state) => {
+    return {
+        players: state.players,
+        deck: state.deck,
+        stacks: state.stacks,
+        circuit: state.circuit,
+        stats: state.stats,
+        settings: state.settings
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        actions: bindActionCreators(Actions, dispatch)
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Board)
