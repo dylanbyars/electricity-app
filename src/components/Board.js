@@ -33,7 +33,7 @@ class Board extends Component {
         this.drawCard()
     }
 
-    drawCard() {
+    drawCard() { 
         let { deck } = this.props
         console.log(this.props.deck)
         // draws a card from the deck object stored in deck
