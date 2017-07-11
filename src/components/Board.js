@@ -3,8 +3,6 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import * as Actions from '../actions/game.actions'
 
-import Deck from 'card-deck'
-
 // import { Player } from './Player';
 import { Stack } from './Stack'
 
@@ -20,25 +18,24 @@ class Board extends Component {
 
     componentDidMount() {
 
-        const CARDS = ['♠2', '♠3', '♠4', '♠5', '♠6', '♠7', '♠8', '♠9', '♠10', '♠J', '♠Q', '♠K', '♠A', '♦2', '♦3', '♦4', '♦5', '♦6', '♦7', '♦8', '♦9', '♦10', '♦J', '♦Q', '♦K', '♦A', '♥2', '♥3', '♥4', '♥5', '♥6', '♥7', '♥8', '♥9', '♥10', '♥J', '♥Q', '♥K', '♥A', '♣2', '♣3', '♣4', '♣5', '♣6', '♣7', '♣8', '♣9', '♣10', '♣J', '♣Q', '♣K', '♣A']
+        let numPlayers = 5
 
         // set the number of players playing. 
-        this.props.actions.setNumPlayers(5)
-        console.log(this.props.players)
+        this.props.actions.setNumPlayers(numPlayers)
+        // console.log(this.props.players.numPlayers)
 
-        // set up their stacks
-        this.props.actions.initStacks()
-        
-        // make a shuffled deck to play with
-        this.props.actions.updateDeck(new Deck(CARDS).shuffle())
+        // generate shuffled deck to play with
+        this.props.actions.initDeck()
+
+        // console.log(this.props)
 
         // start the game!
         this.drawCard()
     }
 
     drawCard() {
-        console.log(this.props)
-        let deck = this.props.deck
+        let { deck } = this.props
+        console.log(this.props.deck)
         // draws a card from the deck object stored in deck
         let card = deck.draw()
         let suit = card[0]
@@ -48,10 +45,6 @@ class Board extends Component {
 
         let { currentPlayer } = players
         let { preCountdown, drinkBreak } = settings
-
-        console.log('Player: ' + currentPlayer)
-        console.log('Draw: ' + rank, suit)
-        console.log('Remaining: ' + deck.remaining())
 
         const getCountdown = (rank) => {
             switch(rank) {
@@ -175,19 +168,20 @@ class Board extends Component {
         }
     }
 
-    updateStacks(drawnCard) {
-        this.props.actions.updateStacks(drawnCard, this.props.currentPlayer)
+    updateStacks(drawnCard, currentPlayer) {
+        this.props.actions.updateStacks(drawnCard, currentPlayer)
     }
 
     updateCircuit(drawnCard) {
+        this.props.actions.updateCircuit(drawnCard, currentPlayer)
 
         // variables
-        const currentState = { ...this.props }
-        const { players, currentPlayer, stacks, currentCircuit } = currentState
+        let { players, stacks, circuit } = this.props
+        let { currentCircuit } = circuit
 
         // if there's nothing in the circuit -- like at the start of the game -- throw whatever's just been drawn into it
-        if (currentCircuit.length === 0) {
-            this.props.actions.updateCircuit([drawnCard])
+        if (this.props.circuit.currentCircuit.length === 0) {
+            this.props.actions.updateCircuit(drawnCard)
         } else {
 
             function getCardDetails(card) {
@@ -260,8 +254,6 @@ class Board extends Component {
         } else {
             return <h3>Loading!</h3>
         }
-
-        
     }
 }
 

@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "devDependencies": {
-    "react-scripts": "1.0.7"
+    "react-scripts": "1.0.7",
+    "redux-logger": "^3.0.6"
   },
   "dependencies": {
     "card-deck": "^1.0.0",

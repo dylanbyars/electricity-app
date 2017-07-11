@@ -4,13 +4,15 @@ import App from './App'
 import registerServiceWorker from './registerServiceWorker'
 import './styles/css/index.css'
 
+import { createStore, applyMiddleware } from 'redux'
+import { createLogger } from 'redux-logger'
 import { Provider } from 'react-redux'
-import Store from './store'
+import { rootReducer } from './reducers/game.reducer'
 
-const StoreInstance = Store()
+let store = createStore(rootReducer, {}, applyMiddleware(createLogger()))
 
 ReactDOM.render(
-    <Provider store={StoreInstance}>
+    <Provider store={store}>
         <App />
     </Provider>, document.getElementById('root'))
 

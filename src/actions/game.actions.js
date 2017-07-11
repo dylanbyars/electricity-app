@@ -5,21 +5,19 @@ const setNumPlayers = (num) => {
     }
 }
 
-const updateDeck = (deck) => {
+const initDeck = () => {
     return {
-        type: 'UPDATE_DECK',
-        payload: deck
+        type: 'INIT_DECK'
     }
 }
 
-const initStacks = (numPlayers) => {
+const drawCard = () => {
     return {
-        type: 'INIT_STACKS',
-        payload: numPlayers
+        type: 'DRAW_CARD'
     }
 }
 
-const updateStacks = ( currentPlayer, card ) => {
+const updateStacks = ( card, currentPlayer ) => {
     return {
         type: 'UPDATE_STACKS',
         payload: {
@@ -50,8 +48,8 @@ const resetCircuit = (card) => {
 
 export { 
     setNumPlayers,
-    updateDeck,
-    initStacks,
+    initDeck,
+    drawCard,
     updateStacks,
     nextPlayer,
     updateCircuit,
