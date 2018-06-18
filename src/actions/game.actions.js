@@ -1,57 +1,62 @@
-const setNumPlayers = (num) => {
-    return {
-        type: 'SET_NUM_PLAYERS',
-        payload: num
-    }
+import { draw, buzz } from '../game'
+
+const setPlayers = numPlayers => {
+  return {
+    type: 'SET_PLAYERS',
+    numPlayers
+  }
 }
 
-const initDeck = () => {
-    return {
-        type: 'INIT_DECK'
-    }
+const initDeck = deck => {
+  return {
+    type: 'INIT_DECK',
+    deck
+  }
 }
 
-const drawCard = () => {
-    return {
-        type: 'DRAW_CARD'
+const drawCard = player => {
+  return (dispatch, getState) => {
+    const state = getState()
+
+    const { deck, currentCircuit } = state.game
+
+    if (deck.remaining() > 0) {
+      const { drawnCard, newDeck } = draw(deck)
+
+      dispatch({
+        type: 'DRAW_CARD',
+        player,
+        drawnCard,
+        newDeck
+      })
+
+      if (currentCircuit.length && buzz([...currentCircuit].pop(), drawnCard)) {
+        debugger
+        dispatch({
+          type: 'UPDATE_CIRCUIT',
+          drawnCard
+        })
+      } else {
+        dispatch({
+          type: 'RESET_CIRCUIT',
+          drawnCard
+        })
+      }
     }
+  }
 }
 
-const updateStacks = ( card, currentPlayer ) => {
-    return {
-        type: 'UPDATE_STACKS',
-        payload: {
-            card, currentPlayer
-        }
-    }
+const doTurn = () => {
+  return (dispatch, getState) => {
+    const state = getState()
+    const { currentPlayer, numPlayers } = state.game
+    const player = currentPlayer < numPlayers - 1 ? currentPlayer + 1 : 0
+    dispatch({
+      type: 'NEXT_PLAYER',
+      player
+    })
+    dispatch(drawCard(player))
+  }
 }
 
-const nextPlayer = () => {
-    return {
-        type: 'NEXT_PLAYER'
-    }
-}
-
-const updateCircuit = (card) => {
-    return {
-        type: 'UPDATE_CIRCUIT',
-        payload: card
-    }
-}
-
-const resetCircuit = (card) => {
-    return {
-        type: 'RESET_CIRCUIT',
-        payload: card
-    }
-}
-
-export { 
-    setNumPlayers,
-    initDeck,
-    drawCard,
-    updateStacks,
-    nextPlayer,
-    updateCircuit,
-    resetCircuit
-}
+export { setPlayers, initDeck, drawCard, doTurn }
