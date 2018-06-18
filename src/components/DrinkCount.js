@@ -29,10 +29,6 @@ const DrinkCount = ({ count, dispatch }) => (
   />
 )
 
-// const mapStateToProps = state => ({
-//   currentPlayer: state.game.currentPlayer
-// })
-
 const enhance = compose(connect())
 
 export default enhance(DrinkCount)

@@ -1,12 +1,27 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { compose, withState, lifecycle } from 'recompose'
-import { counts } from '../game'
+import { compose } from 'recompose'
 
 import DrinkCount from './DrinkCount'
 
-const Player = ({ playerNum, currentPlayer, suit, count }) => {
+const counts = {
+  '2': 2,
+  '3': 3,
+  '4': 4,
+  '5': 5,
+  '6': 6,
+  '7': 7,
+  '8': 8,
+  '9': 9,
+  '10': 10,
+  J: 11,
+  Q: 12,
+  K: 13,
+  A: 14
+}
+
+const Player = ({ playerNum, currentPlayer, suit, count, countUp }) => {
   return (
     <div className="d-flex flex-column align-items-center">
       <h3>Player {playerNum + 1}</h3>
@@ -14,7 +29,7 @@ const Player = ({ playerNum, currentPlayer, suit, count }) => {
         {suit} {count}
       </h1>
       {currentPlayer === playerNum && (
-        <DrinkCount currentPlayer={currentPlayer} count={counts(count)} />
+        <DrinkCount currentPlayer={currentPlayer} count={countUp} />
       )}
     </div>
   )
@@ -26,14 +41,16 @@ Player.propType = {
 
 const mapStateToProps = (state, props) => {
   const { currentPlayer, stacks } = state.game
-  debugger
+
   if (currentPlayer === props.playerNum) {
     const stack = stacks[props.playerNum]
     const currentCard = [...stack].pop()[0]
     const [suit, count] = currentCard
+    const countUp = counts[count]
     return {
       suit,
       count,
+      countUp,
       currentPlayer
     }
   } else {
@@ -45,31 +62,6 @@ const mapStateToProps = (state, props) => {
   }
 }
 
-const enhance = compose(
-  connect(mapStateToProps)
-  // withState('count', 'setCount', 0),
-  // withState('topSuit', 'setTopSuit', ''),
-  // withState('topCount', 'setTopCount', ''),
-  // lifecycle({
-  //   componentDidUpdate(nextProps) {
-  //     const {
-  //       currentPlayer,
-  //       playerNum,
-  //       stack,
-  //       setTopSuit,
-  //       setTopCount,
-  //       setCount
-  //     } = nextProps
-
-  //     if (currentPlayer === playerNum) {
-  //       const currentCard = [...stack].pop()[0]
-  //       const [suit, count] = currentCard
-  //       setTopSuit(suit)
-  //       setTopCount(count)
-  //       setCount(counts[count])
-  //     }
-  //   }
-  // })
-)
+const enhance = compose(connect(mapStateToProps))
 
 export default enhance(Player)

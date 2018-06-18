@@ -31,7 +31,6 @@ const drawCard = player => {
       })
 
       if (currentCircuit.length && buzz([...currentCircuit].pop(), drawnCard)) {
-        debugger
         dispatch({
           type: 'UPDATE_CIRCUIT',
           drawnCard
@@ -50,12 +49,19 @@ const doTurn = () => {
   return (dispatch, getState) => {
     const state = getState()
     const { currentPlayer, numPlayers } = state.game
-    const player = currentPlayer < numPlayers - 1 ? currentPlayer + 1 : 0
-    dispatch({
-      type: 'NEXT_PLAYER',
-      player
-    })
-    dispatch(drawCard(player))
+    const { drinkBreak } = state.settings
+
+    function nextTurn() {
+      const player = currentPlayer < numPlayers - 1 ? currentPlayer + 1 : 0
+
+      dispatch(drawCard(player))
+      dispatch({
+        type: 'NEXT_PLAYER',
+        player
+      })
+    }
+
+    setTimeout(nextTurn, drinkBreak)
   }
 }
 

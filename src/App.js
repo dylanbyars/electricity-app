@@ -9,15 +9,7 @@ import { initDeck, setPlayers, drawCard } from './actions/game.actions'
 import { Input, Button } from 'reactstrap'
 import Player from './components/Player'
 
-const App = ({
-  gameStarted,
-  numPlayers,
-  updateNumPlayers,
-  startGame,
-  stacks,
-  deck,
-  timer
-}) => (
+const App = ({ gameStarted, updateNumPlayers, startGame, stacks }) => (
   <div className="App" onKeyUp={e => e.keyCode === 13 && startGame()}>
     {gameStarted ? (
       <div className="d-flex w-100 justify-content-around">
